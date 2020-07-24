@@ -2,18 +2,17 @@ import { Injectable } from '@angular/core';
 
 const TOKEN_KEY = 'auth-token';
 const USER_KEY = 'auth-user';
+// the token expiration date
+// tslint:disable-next-line:variable-name
+// const TOKEN_EXP: Date;
+
+// the username of the logged in user
+const EMAIL = 'Email';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TokenStorageService {
-
-  // the token expiration date
-  // tslint:disable-next-line:variable-name
-  private token_expires: Date;
-
-  // the username of the logged in user
-  private email: string;
 
   constructor() { }
 
@@ -22,7 +21,12 @@ export class TokenStorageService {
   }
 
   public getEmail(){
-    return this.email;
+    return sessionStorage.getItem(EMAIL);
+  }
+
+  public saveEmail(email: string){
+    window.sessionStorage.removeItem(EMAIL);
+    window.sessionStorage.setItem(EMAIL, email);
   }
 
   public saveToken(token: string) {
@@ -34,22 +38,13 @@ export class TokenStorageService {
     return sessionStorage.getItem(TOKEN_KEY);
   }
 
-  public saveUser(user) {
-    window.sessionStorage.removeItem(USER_KEY);
-    window.sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-  }
-
-  public getUser() {
-    return JSON.parse(sessionStorage.getItem(USER_KEY));
-  }
-
   public updateData() {
     // decode the token to read the username and expiration timestamp
     // tslint:disable-next-line:variable-name
     const token_parts = this.getToken().split(/\./);
     // tslint:disable-next-line:variable-name
     const token_decoded = JSON.parse(window.atob(token_parts[1]));
-    this.token_expires = new Date(token_decoded.exp * 1000);
-    this.email = token_decoded.email;
+    // this.token_expires = new Date(token_decoded.exp * 1000);
+    this.saveEmail(token_decoded.email);
   }
 }

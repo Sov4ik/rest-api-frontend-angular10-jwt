@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {TokenStorageService} from '../services/token-storage.service';
+import {Component, OnInit} from '@angular/core';
+import {ProfileService} from '../services/profile.service';
 
 
 @Component({
@@ -9,10 +9,17 @@ import {TokenStorageService} from '../services/token-storage.service';
 })
 export class ProfileComponent implements OnInit {
   currentUser: any;
+  errorMessage = '';
 
-  constructor(private token: TokenStorageService) { }
+  constructor(private profile: ProfileService) { }
 
   ngOnInit() {
-    this.currentUser = this.token.getUser();
+    this.profile.profile().subscribe(data => {
+      console.log(data.data);
+      this.currentUser = data.data;
+    },
+      error => {
+        this.errorMessage = error.error.message;
+      });
   }
 }
